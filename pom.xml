@@ -16,15 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <repositories>
-      <repository>
-          <id>oss.sonatype.org-snapshot</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      </repository>
-  </repositories>
-
   <dependencies>
-
     <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
     <dependency>
         <groupId>org.apache.pdfbox</groupId>
@@ -135,15 +127,45 @@
         <artifactId>logback-classic</artifactId>
         <version>1.4.14</version>
     </dependency>
-
     <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>5.10.0</version> <!-- Use the latest stable version available -->
         <scope>test</scope>
     </dependency>
-
   </dependencies>
+
+    <build>
+        <!-- Existing or new build configuration goes here -->
+        <plugins>
+            <!-- Add the maven-assembly-plugin configuration here -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>cat.iesesteveterradas.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Other plugins can be added here -->
+        </plugins>
+    </build>
 
    <profiles>
         <profile>

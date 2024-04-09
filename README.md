@@ -1,5 +1,8 @@
 # Plantilla projecte Java amb Maven DAM2-MP06 #
 
+## Estat del projecte
+![example workflow](https://github.com/github/docs/actions/workflows/maven.yml/badge.svg)
+
 ## Arrencada ràpida ##
 Execució ràpida dels diferents exemples i resolusions de problemes
 

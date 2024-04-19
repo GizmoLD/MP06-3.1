@@ -18,8 +18,9 @@ import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 
-
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -71,21 +72,52 @@ public class ExecutarExempleNLPMain {
         // Named Entity Recognition
         TokenNameFinderModel modelPerson = new TokenNameFinderModel(modelInPerson);
         NameFinderME nameFinder = new NameFinderME(modelPerson);
-        logger.info("\nNamed Entity Recognition:");
+        File resultFile = new File("./data/noms_propis.txt");
+        FileWriter writer = new FileWriter(resultFile);
+
         for (String sentence : sentences) {
             String[] tokens = tokenizer.tokenize(sentence);
             opennlp.tools.util.Span[] nameSpans = nameFinder.find(tokens);
-            for (opennlp.tools.util.Span s : nameSpans) {
-                logger.info("Entity: " + tokens[s.getStart()]);
+            StringBuilder combinedName = new StringBuilder();
+            boolean inName = false; 
+            for (int i = 0; i < tokens.length; i++) {
+                if (nameSpans != null && nameSpans.length > 0) {
+                    boolean isNameToken = false;
+                    for (opennlp.tools.util.Span s : nameSpans) {
+                        if (i >= s.getStart() && i < s.getEnd()) {
+                            isNameToken = true;
+                            break;
+                        }
+                    }
+                    if (isNameToken) {
+                        if (!inName) {
+                            inName = true;
+                        }
+                        combinedName.append(tokens[i]).append(" ");
+                    } else {
+                        if (inName) {
+                            logger.info("Entity: " + combinedName.toString().trim() + " - PERSON");
+                            writer.append("Entity: " + combinedName.toString().trim() + " - PERSON\n");
+                            inName = false;
+                            combinedName.setLength(0); 
+                        }
+                    }
+                }
+            }
+            if (inName) {
+                logger.info("Entity: " + combinedName.toString().trim() + " - PERSON");
+                writer.append("Entity: " + combinedName.toString().trim() + " - PERSON\n");
+                combinedName.setLength(0); 
             }
         }
+        
 
         // Clean up IO resources
         modelInSentence.close();
         modelInToken.close();
         modelInPOS.close();
         modelInPerson.close();
-
+        writer.close();
 
         // Inicialitza Stanford CoreNLP
         Properties props = new Properties();
